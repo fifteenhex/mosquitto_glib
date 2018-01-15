@@ -1,5 +1,8 @@
 #pragma once
 
+#define MQTTOPTS	{ "mqtthost", 'h', 0, G_OPTION_ARG_STRING, &mqtthost, "", "" },\
+					{ "mqttport", 'p', 0, G_OPTION_ARG_INT, &mqttport, "", "" }
+
 struct mosquitto_context {
 	struct mosquitto* mosq;
 	const gchar* mqtthost;
