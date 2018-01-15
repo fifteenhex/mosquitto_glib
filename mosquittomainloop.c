@@ -4,6 +4,11 @@
 
 #include "mosquittomainloop.h"
 
+static void mosq_log(struct mosquitto* mosq, void* userdata, int level,
+		const char* str) {
+	g_message(str);
+}
+
 static gboolean handlemosq(GIOChannel *source, GIOCondition condition,
 		gpointer data) {
 	struct mosquitto* mosq = (struct mosquitto*) data;
@@ -51,8 +56,8 @@ static gboolean mosq_idle(gpointer data) {
 }
 
 void mosquittomainloop(struct mosquitto_context* cntx, const gchar* host,
-		gint port, void (*connectcallack)(struct mosquitto* mosq, void* data),
-		void* data) {
+		gint port, gboolean log,
+		void (*connectcallack)(struct mosquitto* mosq, void* data), void* data) {
 
 	memset(cntx, 0, sizeof(*cntx));
 	cntx->mqtthost = host;
@@ -62,5 +67,9 @@ void mosquittomainloop(struct mosquitto_context* cntx, const gchar* host,
 
 	mosquitto_lib_init();
 	cntx->mosq = mosquitto_new(NULL, true, data);
+
+	if (log)
+		mosquitto_log_callback_set(cntx->mosq, mosq_log);
+
 	g_timeout_add(500, mosq_idle, cntx);
 }

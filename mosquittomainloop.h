@@ -14,5 +14,5 @@ struct mosquitto_context {
 };
 
 void mosquittomainloop(struct mosquitto_context* cntx, const gchar* host,
-		gint port, void (*connectcallack)(struct mosquitto* mosq, void* data),
-		void* data);
+		gint port, gboolean log,
+		void (*connectcallack)(struct mosquitto* mosq, void* data), void* data);
