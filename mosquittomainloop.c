@@ -53,6 +53,9 @@ static gboolean mosq_idle(gpointer data) {
 		mosquitto_loop_read(cntx->mosq, 1);
 		mosquitto_loop_write(cntx->mosq, 1);
 	}
+
+	cntx->connected = connected;
+
 	return TRUE;
 }
 

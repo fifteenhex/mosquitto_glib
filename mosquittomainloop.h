@@ -5,6 +5,7 @@
 
 struct mosquitto_context {
 	struct mosquitto* mosq;
+	gboolean connected;
 	const gchar* mqtthost;
 	gint mqttport;
 	GIOChannel* mosqchan;
