@@ -4,8 +4,12 @@
 
 G_BEGIN_DECLS
 
-#define MQTTOPTS	{ "mqtthost", 'h', 0, G_OPTION_ARG_STRING, &mqtthost, "", "" },\
-					{ "mqttport", 'p', 0, G_OPTION_ARG_INT, &mqttport, "", "" }
+#define MQTTOPTS	{ "mqttid", 0, 0, G_OPTION_ARG_STRING, &mqttid, "", "" },\
+					{ "mqtthost", 'h', 0, G_OPTION_ARG_STRING, &mqtthost, "", "" },\
+					{ "mqttport", 'p', 0, G_OPTION_ARG_INT, &mqttport, "", "" },\
+					{ "mqttrootcert", 0, 0, G_OPTION_ARG_STRING, &mqttrootcert, "", "" },\
+					{ "mqttdevicecert", 0, 0, G_OPTION_ARG_STRING, &mqttdevicecert, "", "" },\
+					{ "mqttdevicekey", 0, 0, G_OPTION_ARG_STRING, &mqttdevicekey, "", "" }
 
 #define MOSQUITTO_TYPE_CLIENT mosquitto_client_get_type ()
 G_DECLARE_FINAL_TYPE(MosquittoClient, mosquitto_client, MOSQUITTO, CLIENT,
