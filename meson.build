@@ -2,7 +2,7 @@ project('mosquittomainloop', 'c')
 
 mosquitto = meson.get_compiler('c').find_library('mosquitto')
 
-deps = [ dependency('glib-2.0'), mosquitto ]
+deps = [ dependency('glib-2.0'), dependency('gobject-2.0'), mosquitto ]
 inc = include_directories('./')
 src = [ 'mosquittomainloop.c' ]
 lib = static_library('mosquittomainloop', src,

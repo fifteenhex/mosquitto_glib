@@ -1,19 +1,31 @@
 #pragma once
 
+#include <glib-object.h>
+
+G_BEGIN_DECLS
+
 #define MQTTOPTS	{ "mqtthost", 'h', 0, G_OPTION_ARG_STRING, &mqtthost, "", "" },\
 					{ "mqttport", 'p', 0, G_OPTION_ARG_INT, &mqttport, "", "" }
 
-struct mosquitto_context {
-	struct mosquitto* mosq;
-	gboolean connected;
-	const gchar* mqtthost;
-	gint mqttport;
-	GIOChannel* mosqchan;
-	guint mosqsource;
-	void (*connectcallack)(struct mosquitto* mosq, void* data);
-	void* data;
-};
+#define MOSQUITTO_TYPE_CLIENT mosquitto_client_get_type ()
+G_DECLARE_FINAL_TYPE(MosquittoClient, mosquitto_client, MOSQUITTO, CLIENT,
+		GObject);
 
-void mosquittomainloop(struct mosquitto_context* cntx, const gchar* host,
-		gint port, gboolean log,
-		void (*connectcallack)(struct mosquitto* mosq, void* data), void* data);
+#define MOSQUITTO_CLIENT_SIGNAL_CONNECTED		"connected"
+#define MOSQUITTO_CLIENT_SIGNAL_DISCONNECTED	"disconnected"
+#define MOSQUITTO_CLIENT_SIGNAL_SUBSCRIBE		"subscribe"
+#define MOSQUITTO_CLIENT_SIGNAL_UNSUBSCRIBE		"unsubscribe"
+#define MOSQUITTO_CLIENT_SIGNAL_PUBLISH			"publish"
+#define MOSQUITTO_CLIENT_SIGNAL_MESSAGE			"message"
+
+typedef gboolean (*mosquitto_client_connectioncallback)(MosquittoClient* client,
+		void* something, gpointer user_data);
+
+MosquittoClient* mosquitto_client_new_withclientcert(const gchar* id,
+		const gchar* host, gint port, const gchar* rootcert,
+		const gchar* clientcert, const gchar* clientkey);
+MosquittoClient* mosquitto_client_new_plaintext(const gchar* id,
+		const gchar* host, gint port);
+struct mosquitto* mosquitto_client_getmosquittoinstance(MosquittoClient* client);
+
+G_END_DECLS
