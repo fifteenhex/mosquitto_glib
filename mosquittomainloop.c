@@ -82,7 +82,8 @@ static void mosquitto_client_mosqb_unsubscribe(struct mosquitto* mosq,
 
 static void mosquitto_client_mosqcb_message(struct mosquitto* mosq,
 		void* userdata, const struct mosquitto_message* msg) {
-
+	MosquittoClient* client = (MosquittoClient*) userdata;
+	g_signal_emit(client, signal_message, 0, msg);
 }
 
 static gboolean mosquitto_client_idle(gpointer data) {
