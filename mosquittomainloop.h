@@ -31,5 +31,6 @@ MosquittoClient* mosquitto_client_new_withclientcert(const gchar* id,
 MosquittoClient* mosquitto_client_new_plaintext(const gchar* id,
 		const gchar* host, gint port);
 struct mosquitto* mosquitto_client_getmosquittoinstance(MosquittoClient* client);
+gboolean mosquitto_client_isconnected(MosquittoClient* client);
 
 G_END_DECLS

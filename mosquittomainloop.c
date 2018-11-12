@@ -208,3 +208,7 @@ MosquittoClient* mosquitto_client_new_plaintext(const gchar* id,
 struct mosquitto* mosquitto_client_getmosquittoinstance(MosquittoClient* client) {
 	return client->mosq;
 }
+
+gboolean mosquitto_client_isconnected(MosquittoClient* client) {
+	return client->connected;
+}
