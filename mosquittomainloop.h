@@ -26,7 +26,7 @@ G_DECLARE_FINAL_TYPE(MosquittoClient, mosquitto_client, MOSQUITTO, CLIENT,
 typedef gboolean (*mosquitto_client_connectioncallback)(MosquittoClient* client,
 		void* something, gpointer user_data);
 typedef gboolean (*mosquitto_client_messagecallback)(MosquittoClient* client,
-		const struct mosquitto_message*, gpointer user_data);
+		const struct mosquitto_message* msg, gpointer user_data);
 
 MosquittoClient* mosquitto_client_new_withclientcert(const gchar* id,
 		const gchar* host, gint port, const gchar* rootcert,
