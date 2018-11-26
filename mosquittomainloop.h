@@ -35,4 +35,6 @@ MosquittoClient* mosquitto_client_new_plaintext(const gchar* id,
 struct mosquitto* mosquitto_client_getmosquittoinstance(MosquittoClient* client);
 gboolean mosquitto_client_isconnected(MosquittoClient* client);
 
+gchar* mosquitto_client_createtopic(const gchar* root, ...);
+
 G_END_DECLS

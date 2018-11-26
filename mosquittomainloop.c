@@ -213,3 +213,21 @@ struct mosquitto* mosquitto_client_getmosquittoinstance(MosquittoClient* client)
 gboolean mosquitto_client_isconnected(MosquittoClient* client) {
 	return client->connected;
 }
+
+gchar* mosquitto_client_createtopic(const gchar* root, ...) {
+	GString* topicstr = g_string_new(NULL);
+	g_string_append(topicstr, root);
+
+	va_list args;
+	va_start(args, root);
+
+	const gchar * part = va_arg(args, const gchar*);
+	for (; part != NULL; part = va_arg(args, const gchar*)) {
+		g_string_append(topicstr, "/");
+		g_string_append(topicstr, part);
+	}
+
+	va_end(args);
+	gchar* topic = g_string_free(topicstr, FALSE);
+	return topic;
+}
