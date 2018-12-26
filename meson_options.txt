@@ -1,0 +1,1 @@
+option('mosquitto_glib_debug', type : 'boolean', value : false)

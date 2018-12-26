@@ -3,7 +3,7 @@ project('mosquitto_glib', 'c')
 mosquitto = meson.get_compiler('c').find_library('mosquitto')
 
 conf_data = configuration_data()
-conf_data.set('debug', get_option('debug') ? 1 : 0)
+conf_data.set('debug', get_option('mosquitto_glib_debug') ? 1 : 0)
 configure_file(input : 'config.h.in',
                output : 'config.h',
                configuration : conf_data)
