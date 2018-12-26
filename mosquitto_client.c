@@ -1,9 +1,8 @@
-
 #include <glib.h>
 #include <string.h>
 #include <unistd.h>
 
-#include "mosquittomainloop.h"
+#include "mosquitto_client.h"
 
 static guint signal_connected;
 static guint signal_disconnected;
@@ -25,6 +24,10 @@ struct _MosquittoClient {
 G_DEFINE_TYPE(MosquittoClient, mosquitto_client, G_TYPE_OBJECT);
 
 static void mosquitto_doreadwrite(MosquittoClient* client) {
+	//workaround for https://github.com/eclipse/mosquitto/issues/990
+	if (LIBMOSQUITTO_VERSION_NUMBER < 1005004)
+		mosquitto_loop(client->mosq, 100, 1);
+
 	if (!client->connected)
 		return;
 
@@ -120,9 +123,6 @@ static gboolean mosquitto_client_idle(gpointer data) {
 
 	client->connected = connected;
 
-	//workaround for https://github.com/eclipse/mosquitto/issues/990
-	mosquitto_loop(client->mosq, 500, 1);
-
 	mosquitto_doreadwrite(client);
 
 	return TRUE;
@@ -167,7 +167,10 @@ static MosquittoClient* mosquitto_client_new_full(const gchar* id,
 
 	client->mosq = mosquitto_new(id, true, client);
 	mosquitto_threaded_set(client->mosq, TRUE);
+
+#if MOSQUITTO_GLIB_LOG
 	mosquitto_log_callback_set(client->mosq, mosquitto_client_log);
+#endif
 	mosquitto_connect_callback_set(client->mosq,
 			mosquitto_client_mosqcb_connect);
 	mosquitto_subscribe_callback_set(client->mosq,
