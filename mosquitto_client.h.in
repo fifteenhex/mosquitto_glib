@@ -41,7 +41,8 @@ gchar* mosquitto_client_createtopic(const gchar* root, ...);
 
 #if @json_support@
 #include <json-glib/json-glib.h>
-
+void mosquitto_client_publish_json_builder(MosquittoClient* client, JsonBuilder* builder,
+		const gchar* topic);
 void mosquitto_client_publish_json(MosquittoClient* client,JsonNode* root, const gchar* topic);
 #endif
 
