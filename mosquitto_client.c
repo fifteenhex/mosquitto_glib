@@ -2,6 +2,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "config.h"
 #include "mosquitto_client.h"
 
 static guint signal_connected;
@@ -234,3 +235,18 @@ gchar* mosquitto_client_createtopic(const gchar* root, ...) {
 	gchar* topic = g_string_free(topicstr, FALSE);
 	return topic;
 }
+
+#ifdef MOSQUITTO_CLIENT_JSON
+void mosquitto_client_publish_json(MosquittoClient* client, JsonNode* root,
+		const gchar* topic) {
+	JsonGenerator* jsongenerator = json_generator_new();
+	json_generator_set_root(jsongenerator, root);
+	gsize publishpayloadsz;
+	gchar* publishpayload = json_generator_to_data(jsongenerator,
+			&publishpayloadsz);
+	mosquitto_publish(client->mosq, NULL, topic, publishpayloadsz,
+			publishpayload, 0, false);
+	g_free(publishpayload);
+	g_object_unref(jsongenerator);
+}
+#endif

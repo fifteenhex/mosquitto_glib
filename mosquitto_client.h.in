@@ -33,9 +33,16 @@ MosquittoClient* mosquitto_client_new_withclientcert(const gchar* id,
 		const gchar* clientcert, const gchar* clientkey);
 MosquittoClient* mosquitto_client_new_plaintext(const gchar* id,
 		const gchar* host, gint port);
-struct mosquitto* mosquitto_client_getmosquittoinstance(MosquittoClient* client);
+struct mosquitto* mosquitto_client_getmosquittoinstance(
+		MosquittoClient* client);
 gboolean mosquitto_client_isconnected(MosquittoClient* client);
 
 gchar* mosquitto_client_createtopic(const gchar* root, ...);
+
+#if @json_support@
+#include <json-glib/json-glib.h>
+
+void mosquitto_client_publish_json(MosquittoClient* client,JsonNode* root, const gchar* topic);
+#endif
 
 G_END_DECLS

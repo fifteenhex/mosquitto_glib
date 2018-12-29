@@ -3,3 +3,7 @@
 #if @debug@
 	#define MOSQUITTO_GLIB_LOG
 #endif
+
+#if @json_support@
+#define MOSQUITTO_CLIENT_JSON
+#endif
