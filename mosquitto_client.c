@@ -22,7 +22,7 @@ struct _MosquittoClient {
 	guint mosqsource;
 };
 
-G_DEFINE_TYPE( MosquittoClient, mosquitto_client, G_TYPE_OBJECT);
+G_DEFINE_TYPE(MosquittoClient, mosquitto_client, G_TYPE_OBJECT);
 
 static void mosquitto_doreadwrite(MosquittoClient* client) {
 	//workaround for https://github.com/eclipse/mosquitto/issues/990
@@ -136,22 +136,22 @@ static void mosquitto_client_class_init(MosquittoClientClass *klass) {
 			| G_SIGNAL_NO_RECURSE | G_SIGNAL_DETAILED;
 	GType params[] = { G_TYPE_POINTER };
 	signal_connected = g_signal_newv(MOSQUITTO_CLIENT_SIGNAL_CONNECTED,
-			MOSQUITTO_TYPE_CLIENT, flags, NULL, NULL, NULL, NULL, G_TYPE_NONE,
+	MOSQUITTO_TYPE_CLIENT, flags, NULL, NULL, NULL, NULL, G_TYPE_NONE,
 			G_N_ELEMENTS(params), params);
 	signal_disconnected = g_signal_newv(MOSQUITTO_CLIENT_SIGNAL_DISCONNECTED,
-			MOSQUITTO_TYPE_CLIENT, flags, NULL, NULL, NULL, NULL, G_TYPE_NONE,
+	MOSQUITTO_TYPE_CLIENT, flags, NULL, NULL, NULL, NULL, G_TYPE_NONE,
 			G_N_ELEMENTS(params), params);
 	signal_subscribe = g_signal_newv(MOSQUITTO_CLIENT_SIGNAL_SUBSCRIBE,
-			MOSQUITTO_TYPE_CLIENT, flags, NULL, NULL, NULL, NULL, G_TYPE_NONE,
+	MOSQUITTO_TYPE_CLIENT, flags, NULL, NULL, NULL, NULL, G_TYPE_NONE,
 			G_N_ELEMENTS(params), params);
 	signal_unsubscribe = g_signal_newv(MOSQUITTO_CLIENT_SIGNAL_UNSUBSCRIBE,
-			MOSQUITTO_TYPE_CLIENT, flags, NULL, NULL, NULL, NULL, G_TYPE_NONE,
+	MOSQUITTO_TYPE_CLIENT, flags, NULL, NULL, NULL, NULL, G_TYPE_NONE,
 			G_N_ELEMENTS(params), params);
 	signal_publish = g_signal_newv(MOSQUITTO_CLIENT_SIGNAL_PUBLISH,
-			MOSQUITTO_TYPE_CLIENT, flags, NULL, NULL, NULL, NULL, G_TYPE_NONE,
+	MOSQUITTO_TYPE_CLIENT, flags, NULL, NULL, NULL, NULL, G_TYPE_NONE,
 			G_N_ELEMENTS(params), params);
 	signal_message = g_signal_newv(MOSQUITTO_CLIENT_SIGNAL_MESSAGE,
-			MOSQUITTO_TYPE_CLIENT, flags, NULL, NULL, NULL, NULL, G_TYPE_NONE,
+	MOSQUITTO_TYPE_CLIENT, flags, NULL, NULL, NULL, NULL, G_TYPE_NONE,
 			G_N_ELEMENTS(params), params);
 }
 
@@ -238,38 +238,32 @@ gchar* mosquitto_client_createtopic(const gchar* root, ...) {
 
 #ifdef MOSQUITTO_CLIENT_JSON
 
-static gchar* jsonbuilder_freetostring(JsonBuilder* jsonbuilder, gsize* jsonlen,
+static gchar* mosquitto_client_jsonnode_freetostring(JsonNode* rootnode, gsize* jsonlen,
 		gboolean pretty) {
-	JsonNode* rootnode = json_builder_get_root(jsonbuilder);
 	JsonGenerator* generator = json_generator_new();
 	json_generator_set_root(generator, rootnode);
 	json_generator_set_pretty(generator, pretty);
-
 	gchar* json = json_generator_to_data(generator, jsonlen);
 	g_object_unref(generator);
-	g_object_unref(jsonbuilder);
 	return json;
 }
 
 void mosquitto_client_publish_json_builder(MosquittoClient* client, JsonBuilder* builder,
-		const gchar* topic) {
+		const gchar* topic, gboolean freebuilder) {
 	gsize jsonlen;
-	gchar* json = jsonbuilder_freetostring(builder, &jsonlen, FALSE);
+	gchar* json = mosquitto_client_jsonnode_freetostring(json_builder_get_root(builder), &jsonlen, FALSE);
 	mosquitto_publish(mosquitto_client_getmosquittoinstance(client),
 			NULL, topic, jsonlen, json, 0, FALSE);
 	g_free(json);
+	if(freebuilder)
+	g_object_unref(builder);
 }
 
 void mosquitto_client_publish_json(MosquittoClient* client, JsonNode* root,
 		const gchar* topic) {
-	JsonGenerator* jsongenerator = json_generator_new();
-	json_generator_set_root(jsongenerator, root);
-	gsize publishpayloadsz;
-	gchar* publishpayload = json_generator_to_data(jsongenerator,
-			&publishpayloadsz);
-	mosquitto_publish(client->mosq, NULL, topic, publishpayloadsz,
-			publishpayload, 0, false);
-	g_free(publishpayload);
-	g_object_unref(jsongenerator);
+	gsize jsonlen;
+	gchar* json = mosquitto_client_jsonnode_freetostring(root, &jsonlen, FALSE);
+	mosquitto_publish(client->mosq, NULL, topic, jsonlen,jsonlen, 0, false);
+	g_free(json);
 }
 #endif
