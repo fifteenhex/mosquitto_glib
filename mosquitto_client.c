@@ -59,7 +59,7 @@ static gboolean mosquitto_client_handlemosq(GIOChannel *source,
 
 static void mosquitto_client_log(struct mosquitto* mosq, void* userdata,
 		int level, const char* str) {
-	g_message(str);
+	g_message("%s", str);
 }
 
 static void mosquitto_client_mosqcb_connect(struct mosquitto* mosq,
