@@ -57,10 +57,12 @@ static gboolean mosquitto_client_handlemosq(GIOChannel *source,
 	return TRUE;
 }
 
+#if MOSQUITTO_GLIB_LOG
 static void mosquitto_client_log(struct mosquitto* mosq, void* userdata,
 		int level, const char* str) {
 	g_message("%s", str);
 }
+#endif
 
 static void mosquitto_client_mosqcb_connect(struct mosquitto* mosq,
 		void* userdata, int returncode) {
@@ -263,7 +265,7 @@ void mosquitto_client_publish_json(MosquittoClient* client, JsonNode* root,
 		const gchar* topic) {
 	gsize jsonlen;
 	gchar* json = mosquitto_client_jsonnode_freetostring(root, &jsonlen, FALSE);
-	mosquitto_publish(client->mosq, NULL, topic, jsonlen,jsonlen, 0, false);
+	mosquitto_publish(client->mosq, NULL, topic, jsonlen, json, 0, false);
 	g_free(json);
 }
 #endif
