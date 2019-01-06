@@ -20,6 +20,7 @@ struct _MosquittoClient {
 	gboolean connected;
 	GIOChannel* mosqchan;
 	guint mosqsource;
+	gboolean dead;
 };
 
 G_DEFINE_TYPE(MosquittoClient, mosquitto_client, G_TYPE_OBJECT);
@@ -95,6 +96,9 @@ static void mosquitto_client_mosqcb_message(struct mosquitto* mosq,
 static gboolean mosquitto_client_idle(gpointer data) {
 	MosquittoClient* client = (MosquittoClient*) data;
 
+	if (client->dead)
+		return FALSE;
+
 	gboolean connected = FALSE;
 
 	// This seems like the only way to work out if
@@ -158,6 +162,7 @@ static void mosquitto_client_class_init(MosquittoClientClass *klass) {
 }
 
 static void mosquitto_client_init(MosquittoClient *self) {
+
 }
 
 static MosquittoClient* mosquitto_client_new_full(const gchar* id,
@@ -236,6 +241,11 @@ gchar* mosquitto_client_createtopic(const gchar* root, ...) {
 	va_end(args);
 	gchar* topic = g_string_free(topicstr, FALSE);
 	return topic;
+}
+
+void mosquitto_client_free(MosquittoClient* client) {
+	client->dead = TRUE;
+	mosquitto_disconnect(client->mosq);
 }
 
 #ifdef MOSQUITTO_CLIENT_JSON
